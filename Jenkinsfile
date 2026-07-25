@@ -4,19 +4,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                agent{
-                    docker{
+                agent {
+                    docker {
                         image 'node:18-alpine'
                         reuseNode true
                     }
                 }
                 sh '''
-                    ls-la 
+                    ls -la 
                     node -v
                     npm -v
                     npm ci
                     npm run build
-                    ls-la
+                    ls -la
                 '''
             }
         }
