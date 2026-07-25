@@ -52,10 +52,8 @@ pipeline {
                 //     npm test
                 // '''
                  sh '''
-                    npm ci
-                    npm run build
-                    npm install -D serve
-                    npx serve -s build -l 3000 &
+                    npm install serve
+                    node_modules/.bin/serve -s build &
                     sleep 10
                     npx playwright test
                 '''
