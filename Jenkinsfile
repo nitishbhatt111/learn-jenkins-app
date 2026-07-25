@@ -21,10 +21,9 @@ pipeline {
         //     }
         // }
 
-                stage('Run Tests'){
+                stage('Tests'){
                     parallel{
-                        
-                stage('Test'){
+                    stage('Unit Test'){
                     agent{
                         docker {
                             image 'node:18-alpine'
@@ -38,6 +37,12 @@ pipeline {
                             cat build/index.html
                             npm test
                         '''
+                    }
+                    post {
+                        always {
+                            // junit 'jest-results/junit.xml'
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                        }
                     }
                 }
                 stage('E2E') {
@@ -55,6 +60,12 @@ pipeline {
                             npx playwright test --reporter=html
                         '''
                     }
+                    post {
+                        always {
+                            // junit 'jest-results/junit.xml'
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                        }
+                    }
                 }
 
             }
@@ -62,10 +73,5 @@ pipeline {
         
 
     }
-    post {
-        always {
-            junit 'jest-results/junit.xml'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-        }
-    }
+    
 }
