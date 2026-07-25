@@ -36,10 +36,11 @@ pipeline {
                 '''
             }
         }
-        stage('E2E'){
-            agent{
+         stage('E2E') {
+            agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.62.0-noble'
+                    args '--ipc=host'
                     reuseNode true
                 }
             }
