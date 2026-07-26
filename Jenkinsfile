@@ -139,8 +139,24 @@ pipeline {
                         }
                     }
                 }
-        
 
-    }
-    
-}
+                //Assignment 2 - Approval Stage
+                        stage('Deploy Stg') {
+                            steps {
+                                echo 'STG...'
+                            }
+                        }
+                        stage('Approval') {
+                            steps {
+                                timeout(15) {
+                                input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
+                                }
+                            }
+                        }
+                        stage('Deploy Prd') {
+                            steps {
+                                echo 'PRD...'
+                            }
+                        }
+                    }
+                }
