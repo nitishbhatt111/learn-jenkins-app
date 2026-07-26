@@ -16,6 +16,7 @@ pipeline {
                 }
             steps {
                 sh '''
+                    echo "Checking jenking automatic build..."
                     ls -la 
                     node -v
                     npm -v
