@@ -2,24 +2,24 @@ pipeline {
     agent any
 
     stages {
-        // stage('Build') {
-        //         agent {
-        //             docker {
-        //                 image 'node:18-alpine'
-        //                 reuseNode true
-        //             }
-        //         }
-        //     steps {
-        //         sh '''
-        //             ls -la 
-        //             node -v
-        //             npm -v
-        //             npm ci
-        //             npm run build
-        //             ls -la
-        //         '''
-        //     }
-        // }
+        stage('Build') {
+            //     agent {
+            //         docker {
+            //             image 'node:18-alpine'
+            //             reuseNode true
+            //         }
+            //     }
+            // steps {
+            //     sh '''
+            //         ls -la 
+            //         node -v
+            //         npm -v
+            //         npm ci
+            //         npm run build
+            //         ls -la
+            //     '''
+            // }
+        }
 
                 stage('Tests'){
                     parallel{
@@ -65,6 +65,18 @@ pipeline {
                             // junit 'jest-results/junit.xml'
                             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
                         }
+                    }
+                }
+
+                stage ('deploy'){
+                    steps{
+                        sh '''
+
+                            echo "Deploying to production..."
+                            npm install -g netlify-cli
+                            netlify --version
+                        
+                        '''
                     }
                 }
 
