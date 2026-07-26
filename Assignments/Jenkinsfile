@@ -1,0 +1,22 @@
+pipeline {
+	agent any {
+
+		stages{
+			stage ('Deploy Staging'){
+				steps {
+					echo "Deploying to staging...."
+				}
+			}
+		}
+			stage ('Approval'){
+				steps{
+					echo "Waiting for approval...."
+				}
+			}
+		}
+			stage ('Deploy Prod'){
+				steps {
+					echo "Deploying to production...."
+				}
+			}
+		}
