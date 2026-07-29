@@ -129,25 +129,25 @@ pipeline {
                                 }
                             }
                         }
-                stage ('Deploy Prod'){
-                    agent{
-                        docker {
-                            image 'node:18'
-                            reuseNode true
-                        }
-                    }
-                    steps{
-                        sh '''
-                            npm install netlify-cli
-                            node_modules/.bin/netlify --version
-                            echo "Deploying to Netlify... SITE_ID : $NETLIFY_SITE_ID"
-                            node_modules/.bin/netlify status
-                            node_modules/.bin/netlify deploy --dir=build --prod --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
-                        '''
-                    }
-                }
+                // stage ('Deploy Prod'){
+                //     agent{
+                //         docker {
+                //             image 'node:18'
+                //             reuseNode true
+                //         }
+                //     }
+                //     steps{
+                //         sh '''
+                //             npm install netlify-cli
+                //             node_modules/.bin/netlify --version
+                //             echo "Deploying to Netlify... SITE_ID : $NETLIFY_SITE_ID"
+                //             node_modules/.bin/netlify status
+                //             node_modules/.bin/netlify deploy --dir=build --prod --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
+                //         '''
+                //     }
+                // }
 
-                stage('Prod E2E') {
+                stage('Deploy Prod') {
                     agent {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.61.0-noble'
@@ -166,6 +166,12 @@ pipeline {
                         //     npx playwright test --reporter=html
                         // '''
                         sh '''
+                            node -version
+                            npm install netlify-cli
+                            node_modules/.bin/netlify --version
+                            echo "Deploying to Netlify... SITE_ID : $NETLIFY_SITE_ID"
+                            node_modules/.bin/netlify status
+                            node_modules/.bin/netlify deploy --dir=build --prod --site=$NETLIFY_SITE_ID --auth=$NETLIFY_AUTH_TOKEN
                             npx playwright test --reporter=html
                         '''
                     }
