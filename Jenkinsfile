@@ -109,6 +109,9 @@ pipeline {
             // environment {
             //     CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
             // }
+            environment {
+                        CI_ENVIRONMENT_URL="https://astounding-brigadeiros-fc2742.netlify.app"
+                    }
 
             steps {
                 sh '''
