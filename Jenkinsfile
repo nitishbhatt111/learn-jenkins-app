@@ -84,14 +84,56 @@ pipeline {
                     }
                     steps{
                         sh '''
-                            npm install netlify-cli
+                            npm install netlify-cli node-jq
                             node_modules/.bin/netlify --version
                             echo "Deploying to Netlify... SITE_ID : $NETLIFY_SITE_ID"
                             node_modules/.bin/netlify status
-                            node_modules/.bin/netlify deploy --dir=build
+                            node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
+                            node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
                         '''
+                    script{
+                        env.STAGING_URL = sh(script:"node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true).trim()
+                    }
                     }
                 }
+
+                
+                stage('Staging E2E') {
+                    agent {
+                        docker {
+                            image 'mcr.microsoft.com/playwright:v1.61.0-noble'
+                            reuseNode true
+                        }
+                    }
+
+                    environment {
+                        CI_ENVIRONMENT_URL='${ env.STAGING_URL}'
+                    }
+                    steps {
+                        // sh '''
+                        //     npm install serve
+                        //     node_modules/.bin/serve -s build &
+                        //     sleep 10
+                        //     npx playwright test --reporter=html
+                        // '''
+                        sh '''
+                            npx playwright test --reporter=html
+                        '''
+                    }
+                    post {
+                        always {
+                            // junit 'jest-results/junit.xml'
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, icon: '', keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Staging E2E Report', reportTitles: '', useWrapperFileDirectly: true])
+                        }
+                    }
+                }
+                stage ('Approval') {
+                            steps {
+                                timeout(15) {
+                                input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
+                                }
+                            }
+                        }
                 stage ('Deploy Prod'){
                     agent{
                         docker {
@@ -139,24 +181,5 @@ pipeline {
                         }
                     }
                 }
-
-                //Assignment 2 - Approval Stage
-                        stage('Deploy Stg') {
-                            steps {
-                                echo 'STG...'
-                            }
-                        }
-                        stage('Approval') {
-                            steps {
-                                timeout(15) {
-                                input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
-                                }
-                            }
-                        }
-                        stage('Deploy Prd') {
-                            steps {
-                                echo 'PRD...'
-                            }
-                        }
-                    }
-                }
+           }
+        }
