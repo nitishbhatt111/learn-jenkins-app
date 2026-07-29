@@ -166,7 +166,7 @@ pipeline {
                         //     npx playwright test --reporter=html
                         // '''
                         sh '''
-                            node -version
+                            node --version
                             npm install netlify-cli
                             node_modules/.bin/netlify --version
                             echo "Deploying to Netlify... SITE_ID : $NETLIFY_SITE_ID"
